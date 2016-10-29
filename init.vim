@@ -1,14 +1,28 @@
+" My neovim config
+"
+" Pre-install:
+" * fonts + icons: https://github.com/ryanoasis/nerd-fonts
+" * fast search: https://github.com/BurntSushi/ripgrep
+"   cargo install ripgrep
+" * rust completions: https://github.com/phildawes/racer
+"   cargo install racer
+" * python3 neovim integration:
+"   pip3 install neovim
 "
 " see http://sheerun.net/2014/03/21/how-to-boost-your-vim-productivity/
 " see https://blog.petrzemek.net/2016/04/06/things-about-vim-i-wish-i-knew-earlier/
 "
 
- " Bundles (via Shouho/dein.vim) {
+" Bundles (via Shouho/dein.vim) {
 if &compatible
   set nocompatible               " Be iMproved
 endif
 
 " Required:
+if (!isdirectory(expand("$HOME/.config/nvim/bundles/repos/github.com/Shougo/dein.vim")))
+    call system(expand("mkdir -p $HOME/.config/nvim/bundles/repos/github.com"))
+    call system(expand("git clone https://github.com/Shougo/dein.vim $HOME/.config/nvim/bundles/repos/github.com/Shougo/dein.vim"))
+endif
 set runtimepath+=~/.config/nvim/bundles/repos/github.com/Shougo/dein.vim
 
 " Required:
@@ -17,34 +31,62 @@ call dein#begin('/Users/davidb/.config/nvim/bundles')
 " Let dein manage dein
 " Required:
 call dein#add('Shougo/dein.vim')
+call dein#add('haya14busa/dein-command.vim')
 
 " Add or remove your plugins here:
 "call dein#add('')
 
-call dein#add('ctrlpvim/ctrlp.vim')
-"call dein#add('tacahiroy/ctrlp-funky')
+" GUI
+call dein#add('mhartington/oceanic-next')
+call dein#add('ryanoasis/vim-devicons')
 call dein#add('bling/vim-airline')
 call dein#add('sheerun/vim-polyglot')
-call dein#add('neomake/neomake') " alternatives: syntastic
-call dein#add('diepm/vim-rest-console')
+
+" navigation
+call dein#add('scrooloose/nerdtree', {'on_cmd': 'NERDTreeToggle'})
+"call dein#add('ctrlpvim/ctrlp.vim')
+"call dein#add('tacahiroy/ctrlp-funky')
+call dein#add('Shougo/denite.nvim') " alternatives: unite, ctrlp, ctrlp-funky, commandT, fzf (fuzzyfinder)
+"call dein#add('christoomey/vim-sort-motion', {'on_cmd': 'gs'})
+
+" edition
 call dein#add('editorconfig/editorconfig-vim')
 call dein#add('Chiel92/vim-autoformat')
 call dein#add('michaeljsmith/vim-indent-object') " alternatives: kana/vim-textobj-indent
 call dein#add('wellle/targets.vim')
 call dein#add('tomtom/tcomment_vim') " alternatives: NERDCommenter
 call dein#add('Shougo/deoplete.nvim')
-" javascript
+
+" lang: javascript / typescript
 "call dein#add('maksimr/vim-jsbeautify')
-" rust
-call dein#add('rust-lang/rust.vim')
-call dein#add('racer-rust/vim-racer')
+"call dein#add('othree/yajs.vim', {'on_ft': 'javascript'})
+"call dein#add('othree/jsdoc-syntax.vim', {'on_ft':['javascript', 'typescript']})
+"call dein#add('othree/es.next.syntax.vim', {'on_ft': 'javascript'})
+"call dein#add('1995eaton/vim-better-javascript-completion', {'on_ft': ['javascript']})
+"call dein#add('othree/javascript-libraries-syntax.vim')
+"call dein#add('HerringtonDarkholme/yats.vim', {'on_ft': 'typescript'})
+"call dein#add('Quramy/tsuquyomi', {'on_ft': 'typescript'})
 
-" lazy load on command executed
-call dein#add('scrooloose/nerdtree', {'on_cmd': 'NERDTreeToggle'})
-"call dein#add('christoomey/vim-sort-motion', {'on_cmd': 'gs'})
+" lang: rust
+call dein#add('rust-lang/rust.vim', {'on_ft': 'rust'})
+call dein#add('racer-rust/vim-racer', {'on_ft': 'rust'})
 
-" You can specify revision/branch/tag.
+" lang: misc
+
+"call dein#add('kchmck/vim-coffee-script', {'on_ft': 'coffee'})
+"call dein#add('hail2u/vim-css3-syntax', {'on_ft':['css','scss']})
+"call dein#add('elzr/vim-json', {'on_ft': 'json'})
+"call dein#add('tpope/vim-markdown', {'on_ft': 'markdown'})
+"call dein#add('suan/vim-instant-markdown', {'on_ft': 'markdown'})
+"call dein#add('dhruvasagar/vim-table-mode')
+"call dein#add('tmhedberg/SimpylFold', {'on_ft': 'python'})
+
+" analyzer, builder,...
+call dein#add('neomake/neomake') " alternatives: syntastic
+
+" tools
 call dein#add('Shougo/vimshell', { 'rev': '3787e5' })
+call dein#add('diepm/vim-rest-console')
 
 " Required:
 call dein#end()
@@ -59,12 +101,32 @@ filetype plugin indent on
 
 " }
 
-" CtrlP {
+" Icons {
+" see https://github.com/ryanoasis/vim-devicons
+" Pre-install : https://github.com/ryanoasis/nerd-fonts
+
+"}
+
+" Denite {
+"
+" ripgrep
+call denite#custom#var('file_rec', 'command', ['rg', '--files'])
+call denite#custom#var('grep', 'command', ['rg'])
+call denite#custom#var('grep', 'recursive_opts', [])
+call denite#custom#var('grep', 'final_opts', [])
+call denite#custom#var('grep', 'separator', ['--'])
+call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
+
+call denite#custom#source('file_mru', 'converters', ['converter_relative_word'])
+
+" }
+
+" OFF: CtrlP {
 let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_root_markers = ['.gitignore', '.editorconfig']
 " }
 
-" Syntastic {
+" OFF: Syntastic {
 " my basic conf
 "
 
@@ -95,14 +157,14 @@ highlight link SyntasticStyleWarningSign SignColumn
 
 " NeoMake {
 
-let g:neomake_enabled_makers = ['makeprg', 'cargo']
+"let g:neomake_enabled_makers = ['makeprg', 'cargo']
 let g:neomake_python_enabled_makers = ['pep8', 'pylint']
 let g:neomake_rust_enabled_makers = ['cargo']
 let b:neomake_rust_enabled_makers = ['rustc']
 let g:neomake_open_list = 2
 let g:neomake_serialize = 1
 
-autocmd! BufWritePost * Neomake!
+"autocmd! BufWritePost * Neomake!
 
 let g:quickfixsigns_protect_sign_rx = '^neomake_'
 " }
@@ -112,6 +174,26 @@ let g:quickfixsigns_protect_sign_rx = '^neomake_'
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#sources = {}
 let g:deoplete#sources._ = ['buffer']
+" }
+
+" Color {
+" For Neovim 0.1.3 and 0.1.4
+" let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+
+ " Or if you have Neovim >= 0.1.5
+if (has("termguicolors"))
+  set termguicolors
+endif
+
+syntax enable
+colorscheme OceanicNext
+" enable italics, disabled by default
+let g:oceanic_next_terminal_italic = 1
+
+" enable bold, disabled by default
+let g:oceanic_next_terminal_bold = 1
+
+let g:airline_theme='oceanicnext'
 " }
 
 " Airline {
@@ -218,6 +300,7 @@ endfunction
 "
 " DisableNonCountedBasicMotions
 " }
+
 " EditorConfig {
 "
 " to avoid issues with fugitive
@@ -257,7 +340,6 @@ let g:used_javascript_libs = 'jquery,underscore,requirejs,chai,handlebars'
 "set autoread
 "}
 
-
 " Typescript {
 
 let g:syntastic_typescript_tsc_fname = ''
@@ -285,7 +367,7 @@ let g:syntastic_python_flake8_exec = '/usr/local/bin/python3'
 let g:syntastic_python_flake8_args = ['-m', 'flake8']
 "}
 
-" Core {
+ " Core {
 set number
 "set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<,space:␣
 set listchars=tab:>·,trail:␣
@@ -293,15 +375,25 @@ set list
 "Invisible character colors
 highlight NonText guifg=#4a4a59
 highlight SpecialKey guifg=#4a4a59
+
+if executable("rg")
+    set grepprg=rg\ --vimgrep\ --no-heading
+    set grepformat=%f:%l:%c:%m,%f:%l:%m
+endif
 " }
 
 " My Key Mapping
 " try to only use Leader
 "
 let mapleader = "\<Space>"
-" open/save file
-nnoremap <Leader>o :CtrlP<CR>
-nnoremap <Leader>w :w<CR>
+" navigation
+"nnoremap <Leader>o :CtrlP<CR>
+nnoremap <Leader>o  :Denite buffer file_rec<CR>
+nnoremap <Leader>l  :Denite line<CR>
+nnoremap <Leader>f  :Denite grep<CR>
+nnoremap <Leader>w  :w<CR>
+map <Leader>e :NERDTreeToggle<CR>
+
 " copy/paste...
 vmap <Leader>y "+y
 vmap <Leader>d "+d
@@ -311,7 +403,6 @@ nmap <Leader><Leader> V
 "nmap <Leader>a :%y+<CR>
 nmap <Leader>a ggvG$
 
-map <Leader>e :NERDTreeToggle<CR>
 
 " jj to escape insert mode
 imap jj <ESC>
