@@ -8,6 +8,9 @@
 "   cargo install racer
 " * python3 neovim integration:
 "   pip3 install neovim
+" * ensime for vim:
+"   pip2 install --user --upgrade neovim
+"   pip2 install --user --upgrade websocket-client sexpdata
 "
 " see http://sheerun.net/2014/03/21/how-to-boost-your-vim-productivity/
 " see https://blog.petrzemek.net/2016/04/06/things-about-vim-i-wish-i-knew-earlier/
@@ -40,25 +43,25 @@ call dein#add('haya14busa/dein-command.vim')
 call dein#add('mhartington/oceanic-next')
 call dein#add('ryanoasis/vim-devicons')
 call dein#add('bling/vim-airline')
+call dein#add('Yggdroot/indentLine')
 call dein#add('sheerun/vim-polyglot')
 
 " navigation
-call dein#add('scrooloose/nerdtree', {'on_cmd': 'NERDTreeToggle'})
-"call dein#add('ctrlpvim/ctrlp.vim')
-"call dein#add('tacahiroy/ctrlp-funky')
+call dein#add('scrooloose/nerdtree', {'on_cmd': 'NERDTreeToggle'}) " alternatives: Shougo/vimfiler
 call dein#add('Shougo/denite.nvim') " alternatives: unite, ctrlp, ctrlp-funky, commandT, fzf (fuzzyfinder)
 "call dein#add('christoomey/vim-sort-motion', {'on_cmd': 'gs'})
+call dein#add('wellle/targets.vim')
+call dein#add('michaeljsmith/vim-indent-object') " alternatives: kana/vim-textobj-indent
 
 " edition
 call dein#add('editorconfig/editorconfig-vim')
 call dein#add('Chiel92/vim-autoformat')
-call dein#add('michaeljsmith/vim-indent-object') " alternatives: kana/vim-textobj-indent
-call dein#add('wellle/targets.vim')
 call dein#add('tomtom/tcomment_vim') " alternatives: NERDCommenter
 call dein#add('Shougo/deoplete.nvim')
+call dein#add('Raimondi/delimitMate')
 
 " lang: javascript / typescript
-"call dein#add('maksimr/vim-jsbeautify')
+"call dein#add('maksimr/vim-jsbeautify', {'on_ft: ['javascript', 'css']})
 "call dein#add('othree/yajs.vim', {'on_ft': 'javascript'})
 "call dein#add('othree/jsdoc-syntax.vim', {'on_ft':['javascript', 'typescript']})
 "call dein#add('othree/es.next.syntax.vim', {'on_ft': 'javascript'})
@@ -70,6 +73,10 @@ call dein#add('Shougo/deoplete.nvim')
 " lang: rust
 call dein#add('rust-lang/rust.vim', {'on_ft': 'rust'})
 call dein#add('racer-rust/vim-racer', {'on_ft': 'rust'})
+
+" lang: scala
+call dein#add('ensime/ensime-vim')
+call dein#add('derekwyatt/vim-scala', {'on_ft': 'scala'})
 
 " lang: misc
 
@@ -83,6 +90,9 @@ call dein#add('racer-rust/vim-racer', {'on_ft': 'rust'})
 
 " analyzer, builder,...
 call dein#add('neomake/neomake') " alternatives: syntastic
+" git
+"call dein#add('tpope/vim-fugitive')
+"call dein#add('Xuyuanp/nerdtree-git-plugin', {'on_cmd': 'NERDTreeToggle'})
 
 " tools
 call dein#add('Shougo/vimshell', { 'rev': '3787e5' })
@@ -159,11 +169,13 @@ highlight link SyntasticStyleWarningSign SignColumn
 
 "let g:neomake_enabled_makers = ['makeprg', 'cargo']
 let g:neomake_python_enabled_makers = ['pep8', 'pylint']
-let g:neomake_rust_enabled_makers = ['cargo']
+"let g:neomake_rust_enabled_makers = ['cargo']
 let b:neomake_rust_enabled_makers = ['rustc']
 let g:neomake_open_list = 2
 let g:neomake_serialize = 1
 
+let g:neomake_verbose=3
+let g:neomake_logfile='/tmp/neomake.log'
 "autocmd! BufWritePost * Neomake!
 
 let g:quickfixsigns_protect_sign_rx = '^neomake_'
@@ -176,7 +188,7 @@ let g:deoplete#sources = {}
 let g:deoplete#sources._ = ['buffer']
 " }
 
-" Color {
+" Colors and fonts {
 " For Neovim 0.1.3 and 0.1.4
 " let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
@@ -194,17 +206,34 @@ let g:oceanic_next_terminal_italic = 1
 let g:oceanic_next_terminal_bold = 1
 
 let g:airline_theme='oceanicnext'
+set encoding=utf8
+"linux:  set guifont=<FONT_NAME> <FONT_SIZE>
+"set guifont=Droid\ Sans\ Mono\ for\ Powerline\ Plus\ Nerd\ File\ Types\ 11
+"mac osx: set guifont=<FONT_NAME>:h<FONT_SIZE>
+set guifont=Sauce\ Code\ Pro\ Nerd\ Font\ Complete:h13
+"set guifont=Droid\ Sans\ Mono\ for\ Powerline\ Plus\ Nerd\ File\ Types:h11
+let g:webdevicons_enable = 1
+let g:webdevicons_enable_nerdtree = 1
+let g:webdevicons_enable_unite = 1
+let g:webdevicons_enable_airline_tabline = 1
+let g:webdevicons_enable_airline_statusline = 1
+let g:webdevicons_enable_vimfiler = 1
+let g:webdevicons_conceal_nerdtree_brackets = 1
 " }
 
 " Airline {
+"
 
 " status line always opened
 set laststatus=2
 
 let g:airline#extensions#tabline#enabled = 1
-
+let g:airline#extensions#tabline#buffer_idx_mode = 1
+let g:airline#extensions#tabline#fnamemod = ':t'
+let g:airline#extensions#tabline#show_tab_nr = 1
 "  powerline font
 let g:airline_powerline_fonts=1
+cnoreabbrev <expr> x getcmdtype() == ":" && getcmdline() == 'x' ? 'Sayonara' : 'x'
 " }
 
 " Disable Arrow and Non Counted move {
@@ -351,7 +380,6 @@ let g:syntastic_typescript_tsc_fname = ''
 " In normal mode type gd to go to a definition
 " In normal mode type gs to splitted open a definition
 " In normal mode type gx to vsplitted open a definition
-set hidden
 "let g:racer_cmd = expand("$HOME/.cargo/bin/racer")
 "let $RUST_SRC_PATH = expand("$HOME/.cargo/registry/src/rustc-1.11.0/src")
 
@@ -367,8 +395,63 @@ let g:syntastic_python_flake8_exec = '/usr/local/bin/python3'
 let g:syntastic_python_flake8_args = ['-m', 'flake8']
 "}
 
- " Core {
-set number
+" Scala {
+" ensime
+autocmd BufWritePost *.scala silent :EnTypeCheck
+au FileType scala nnoremap <leader>gd :EnDeclaration<CR>
+au FileType scala nnoremap <leader>gs :EnDeclarationSplit<CR>
+au FileType scala nnoremap <leader>gx :EnDeclarationSplit v<CR>
+au FileType scala nnoremap <F2> :EnDocBrowse<CR>
+" neomake
+let g:neomake_sbt_maker = {
+        \ 'exe': 'sbt',
+        \ 'args': ['set skip in update := true', 'offline', '-Dsbt.log.format=false', 'compile', 'test;compile'],
+        \ 'errorformat':
+        \   '[%trror] %f:%l:\ %m,%-G%.%#'.
+        \   '[%tarn] %f:%l: %m',
+        \ }
+au FileType scala nnoremap <leader>b :Neomake! sbt<CR>
+" }
+
+" Markdown {
+
+" no need to fold things in markdown all the time
+let g:vim_markdown_folding_disabled = 1
+" turn on spelling for markdown files
+autocmd BufRead,BufNewFile *.md setlocal spell complete+=kspell
+" highlight bad words in red
+autocmd BufRead,BufNewFile *.md hi SpellBad guibg=#ff2929 guifg=#ffffff" ctermbg=224
+" disable markdown auto-preview. Gets annoying
+let g:instant_markdown_autostart = 0
+
+" }
+
+" NERDTree {
+" close vim if the only window left open is a NERDTree
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" open NERDTree automatically when vim starts up on opening a directory
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists("s:std_in") | exe 'NERDTree' argv()[0] | wincmd p | ene | endif
+
+" }
+
+" Git {
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ "Unknown"   : "?"
+    \ }
+" }
+
+" Core {
+"
+"set number "see section Disable Arrow
 "set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<,space:␣
 set listchars=tab:>·,trail:␣
 set list
@@ -386,29 +469,84 @@ endif
 " try to only use Leader
 "
 let mapleader = "\<Space>"
-" navigation
-"nnoremap <Leader>o :CtrlP<CR>
-nnoremap <Leader>o  :Denite buffer file_rec<CR>
-nnoremap <Leader>l  :Denite line<CR>
-nnoremap <Leader>f  :Denite grep<CR>
-nnoremap <Leader>w  :w<CR>
-map <Leader>e :NERDTreeToggle<CR>
 
+" No need for ex mode
+nnoremap Q <nop>
+" recording macros is not my thing
+map q <Nop>
+
+" navigation between files
+    "nnoremap <Leader>o :CtrlP<CR>
+    nnoremap <Leader>o  :Denite buffer file_rec<CR>
+    nnoremap <Leader>f  :Denite grep<CR>
+    nnoremap <Leader>w  :w<CR>
+    map <Leader>e :NERDTreeToggle<CR>
+
+" navigation between window
+    map <C-h> <C-w>h
+    map <C-j> <C-w>j
+    map <C-k> <C-w>k
+    map <C-l> <C-w>l
+
+" navigation between lines
+    noremap H ^
+    noremap L g_
+    noremap J 5j
+    noremap K 5k
+    nnoremap <Leader>l  :Denite line<CR>
+
+" navigation panel & tmux
+    "let g:tmux_navigator_no_mappings = 1
+    " nnoremap <silent> <C-j> :TmuxNavigateDown<cr>
+    " nnoremap <silent> <C-k> :TmuxNavigateUp<cr>
+    " nnoremap <silent> <C-l> :TmuxNavigateRight<cr>
+    " nnoremap <silent> <C-h> :TmuxNavigateLeft<CR>
+    " nnoremap <silent> <C-;> :TmuxNavigatePrevious<cr>
+    "
+" navigation between buffers
+    "nmap <leader>t :term<cr>
+    nmap <leader>, :bnext<CR>
+    nmap <leader>. :bprevious<CR>
+    nmap <leader>1 <Plug>AirlineSelectTab1
+    nmap <leader>2 <Plug>AirlineSelectTab2
+    nmap <leader>3 <Plug>AirlineSelectTab3
+    nmap <leader>4 <Plug>AirlineSelectTab4
+    nmap <leader>5 <Plug>AirlineSelectTab5
+    nmap <leader>6 <Plug>AirlineSelectTab6
+    nmap <leader>7 <Plug>AirlineSelectTab7
+    nmap <leader>8 <Plug>AirlineSelectTab8
+    nmap <leader>9 <Plug>AirlineSelectTab9
 " copy/paste...
-vmap <Leader>y "+y
-vmap <Leader>d "+d
-nmap <Leader>p "+p
-nmap <Leader>P "+P
-nmap <Leader><Leader> V
-"nmap <Leader>a :%y+<CR>
-nmap <Leader>a ggvG$
+    vmap <Leader>y "+y
+    vmap <Leader>d "+d
+    nmap <Leader>p "+p
+    nmap <Leader>P "+P
+    nmap <Leader><Leader> V
+    vnoremap <C-c> "*y<CR>
+    vnoremap y "*y<CR>
+    nnoremap Y "*Y<CR>
+    let g:multi_cursor_next_key='<C-n>'
+    let g:multi_cursor_prev_key='<C-p>'
+    let g:multi_cursor_skip_key='<C-x>'
+    let g:multi_cursor_quit_key='<Esc>'
+    "nmap <Leader>a :%y+<CR>
+    nmap <Leader>a ggvG$
 
+" edition
+    " align blocks of text and keep them selected
+    vmap < <gv
+    vmap > >gv
+    noremap <leader>< :Autoformat<CR>
+    " toggle comment
+    " gc{motion}   :: Toggle comments
+    " gcc          :: Toggle comment for the current line
+    " gc           :: Toggle comments (visual mode)
+    vnoremap <c-/> :TComment<cr>
+
+" scala (ensime)
 
 " jj to escape insert mode
 imap jj <ESC>
-map <C-h> <C-w>h
-map <C-j> <C-w>j
-map <C-k> <C-w>k
-map <C-l> <C-w>l
+
 
 " vim: set sw=4 ts=4 sts=4 et tw=78 foldmarker={,} foldlevel=0 foldmethod=marker spell:
