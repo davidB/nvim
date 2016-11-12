@@ -29,7 +29,7 @@ endif
 set runtimepath+=~/.config/nvim/bundles/repos/github.com/Shougo/dein.vim
 
 " Required:
-call dein#begin('/Users/davidb/.config/nvim/bundles')
+call dein#begin(expand('$HOME/.config/nvim/bundles'))
 
 " Let dein manage dein
 " Required:
