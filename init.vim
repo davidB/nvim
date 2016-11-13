@@ -11,6 +11,7 @@
 " * ensime for vim:
 "   pip2 install --user --upgrade neovim
 "   pip2 install --user --upgrade websocket-client sexpdata
+" * setup terminal color like https://raw.githubusercontent.com/voronianski/oceanic-next-theme/master/colors.png
 "
 " see http://sheerun.net/2014/03/21/how-to-boost-your-vim-productivity/
 " see https://blog.petrzemek.net/2016/04/06/things-about-vim-i-wish-i-knew-earlier/
